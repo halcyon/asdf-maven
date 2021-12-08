@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 get_maven_versions() {
   # super clumsy regex to locate all Maven version tags on their history page

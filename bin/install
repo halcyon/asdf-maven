@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # global for error reporting
 ASDF_MAVEN_ERROR=""
