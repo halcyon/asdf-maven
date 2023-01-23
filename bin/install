@@ -8,10 +8,10 @@ install_maven() {
 	local version=$1
 	local destdir=$2
 
-	get_maven $version $destdir
+	get_maven "$version" "$destdir"
 	[[ -z "$ASDF_MAVEN_ERROR" ]] || return
 
-	build_copy_cleanup $version $destdir
+	build_copy_cleanup "$version" "$destdir"
 }
 
 # Download Maven source from Apache
@@ -19,7 +19,9 @@ get_maven() {
 	local version=$1
 	local destdir=$2
 
-	local major=$(echo $version | cut -d '.' -f 1)
+
+	local major
+	major=$(echo "$version" | cut -d '.' -f 1)
 	local base="https://archive.apache.org/dist/maven"
 	local url="$base/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
 
@@ -27,8 +29,8 @@ get_maven() {
 		local url="https://repository.apache.org/service/local/artifact/maven/redirect?r=snapshots&g=org.apache.maven&a=apache-maven&v=$version&e=tar.gz&c=bin"
 	fi
 
-	curl -fLC - --retry 3 --retry-delay 3 -o "$destdir/$version.tar.gz" "$url"
-	if [ ! $? -eq 0 ]; then
+
+	if ! curl -fLC - --retry 3 --retry-delay 3 -o "$destdir/$version.tar.gz" "$url"; then
 		ASDF_MAVEN_ERROR="Could not download $url. Perhaps the version of Maven you're trying to install does not exist"
 	fi
 }
@@ -38,21 +40,22 @@ build_copy_cleanup() {
 	local version=$1
 	local destdir=$2
 
-	local origin=$(pwd)
-	cd "$destdir"; {
-		tar xzvf $version.tar.gz
-		rm $version.tar.gz
+	local origin
+	origin=$(pwd)
+	cd "$destdir" || exit; {
+		tar xzvf "$version".tar.gz
+		rm "$version".tar.gz
 
-		mv apache-maven-$version/* .
-		rmdir apache-maven-$version
+		mv apache-maven-"$version"/* .
+		rmdir apache-maven-"$version"
 	}
-	cd $origin
+	cd "$origin" || exit
 }
 
 #
 # MAIN
 #
-install_maven $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH
+install_maven "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
 
 if [ -n "$ASDF_MAVEN_ERROR" ]; then
 	echo "ERROR: $ASDF_MAVEN_ERROR." > /dev/stderr
