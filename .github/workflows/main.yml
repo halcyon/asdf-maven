@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-plugin:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        version:
+          - latest # test latest
+          - latest:3.6 # test the latest in an old release "series"
+          - "3.6.3" # test a specific old release
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: asdf-vm/actions/plugin-test@v1
+        with:
+          command: mvn --version
+          version: ${{ matrix.version }}
+
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
