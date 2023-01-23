@@ -6,12 +6,12 @@ get_maven_versions() {
 
   # iterate all lines coming back from the Maven release history
   for line in $(curl -s https://maven.apache.org/docs/history.html); do
-    [[ $line =~ $version ]] && echo ${BASH_REMATCH[2]}
+    [[ $line =~ $version ]] && echo "${BASH_REMATCH[2]}"
   done
 
   snapshot_version="[0-9].*-SNAPSHOT"
   for line in $(curl -s https://repository.apache.org/content/repositories/snapshots/org/apache/maven/apache-maven/maven-metadata.xml); do
-    [[ $line =~ $snapshot_version ]] && echo ${BASH_REMATCH[0]}
+    [[ $line =~ $snapshot_version ]] && echo "${BASH_REMATCH[0]}"
   done
 }
 
