@@ -40,11 +40,8 @@ build_copy_cleanup() {
 
 	local origin=$(pwd)
 	cd "$destdir"; {
-		tar xzvf $version.tar.gz
+		tar xzvf $version.tar.gz --strip 1
 		rm $version.tar.gz
-
-		mv apache-maven-$version/* .
-		rmdir apache-maven-$version
 	}
 	cd $origin
 }
