@@ -8,10 +8,10 @@ install_maven() {
 	local version=$1
 	local destdir=$2
 
-	get_maven $version $destdir
+	get_maven $version "$destdir"
 	[[ -z "$ASDF_MAVEN_ERROR" ]] || return
 
-	build_copy_cleanup $version $destdir
+	build_copy_cleanup $version "$destdir"
 }
 
 # Download Maven source from Apache
@@ -46,13 +46,13 @@ build_copy_cleanup() {
 		mv apache-maven-$version/* .
 		rmdir apache-maven-$version
 	}
-	cd $origin
+	cd "$origin"
 }
 
 #
 # MAIN
 #
-install_maven $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH
+install_maven $ASDF_INSTALL_VERSION "$ASDF_INSTALL_PATH"
 
 if [ -n "$ASDF_MAVEN_ERROR" ]; then
 	echo "ERROR: $ASDF_MAVEN_ERROR." > /dev/stderr
