@@ -14,6 +14,12 @@ install_maven() {
 	build_copy_cleanup $version "$destdir"
 }
 
+# Function to compare versions
+version_lt() {
+	# returns 0 (true) if first version is less than second version, otherwise 1 (false)
+	[ "$(printf '%s\n' "$1" "$2" | sort -V | head -n1)" != "$2" ]
+}
+
 # Download Maven source from Apache
 get_maven() {
 	local version=$1
@@ -21,6 +27,12 @@ get_maven() {
 
 	local major=$(echo $version | cut -d '.' -f 1)
 	local base="http://dlcdn.apache.org/maven"
+
+	# Set base URL conditionally based on version
+	if version_lt "$version" "3.8.8"; then
+		base="https://archive.apache.org/dist/maven"
+	fi
+
 	local url="$base/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
 
 	if [[ "$version" == *SNAPSHOT ]]; then
