@@ -29,7 +29,7 @@ get_maven() {
 
 	local major
 	major=$(echo "$version" | cut -d '.' -f 1)
-	local main_url="http://dlcdn.apache.org/maven/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
+	local main_url="https://dlcdn.apache.org/maven/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
 	local archive_url="https://archive.apache.org/dist/maven/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
 
 	if [[ "$version" == *SNAPSHOT ]]; then
