@@ -14,22 +14,41 @@ install_maven() {
 	build_copy_cleanup $version "$destdir"
 }
 
+download_file() {
+	local url=$1
+	local dest=$2
+
+	curl -fLC - --retry 3 --retry-delay 3 -o "$dest" "$url"
+	return $?
+}
+
 # Download Maven source from Apache
 get_maven() {
 	local version=$1
 	local destdir=$2
 
-	local major=$(echo $version | cut -d '.' -f 1)
-	local base="https://archive.apache.org/dist/maven"
-	local url="$base/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
+	local major
+	major=$(echo "$version" | cut -d '.' -f 1)
+	local main_url="https://dlcdn.apache.org/maven/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
+	local archive_url="https://archive.apache.org/dist/maven/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
 
 	if [[ "$version" == *SNAPSHOT ]]; then
-		local url="https://repository.apache.org/service/local/artifact/maven/redirect?r=snapshots&g=org.apache.maven&a=apache-maven&v=$version&e=tar.gz&c=bin"
+		local snapshot_url="https://repository.apache.org/service/local/artifact/maven/redirect?r=snapshots&g=org.apache.maven&a=apache-maven&v=$version&e=tar.gz&c=bin"
+		download_file "$snapshot_url" "$destdir/$version.tar.gz"
+		if [ $? -ne 0 ]; then
+			ASDF_MAVEN_ERROR="Could not download SNAPSHOT version $version from $snapshot_url. Perhaps the version of Maven you're trying to install does not exist"
+			return 1
+		fi
+		return 0
 	fi
 
-	curl -fLC - --retry 3 --retry-delay 3 -o "$destdir/$version.tar.gz" "$url"
-	if [ ! $? -eq 0 ]; then
-		ASDF_MAVEN_ERROR="Could not download $url. Perhaps the version of Maven you're trying to install does not exist"
+	# Attempt to download from the main URL
+	if [ "$(download_file "$main_url" "$destdir/$version.tar.gz")" -ne 0 ]; then
+		# If the download fails, attempt to download from the archive URL
+		if [ "$(download_file "$archive_url" "$destdir/$version.tar.gz")" -ne 0 ]; then
+			ASDF_MAVEN_ERROR="Could not download Maven $version from either the main or archive URL. Perhaps the version of Maven you're trying to install does not exist"
+			return 1
+		fi
 	fi
 }
 
