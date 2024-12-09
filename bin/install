@@ -21,6 +21,7 @@ get_maven() {
 
 	local major=$(echo $version | cut -d '.' -f 1)
 	local base="${ASDF_MAVEN_MIRROR:=https://archive.apache.org/dist/maven}"
+	echo "$base"
 	local url="$base/maven-$major/$version/binaries/apache-maven-$version-bin.tar.gz"
 
 	if [[ "$version" == *SNAPSHOT ]]; then
