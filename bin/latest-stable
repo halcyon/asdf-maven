@@ -11,4 +11,4 @@ get_maven_versions() {
   done
 }
 
-get_maven_versions | sort -r | head -n 1
+get_maven_versions | sort -t. -k1,1nr -k2,2nr -k3,3nr | head -n 1
