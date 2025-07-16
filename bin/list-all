@@ -2,7 +2,7 @@
 
 get_maven_versions() {
   # super clumsy regex to locate all Maven version tags on their history page
-  version=".*<td>(<b>)?([0-9]\.[0-9](\.[0-9])?(-.*)?)(</b>)?</td>.*"
+  version=".*<td>(<b>)?([0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9a-zA-Z-]*)?)(</b>)?</td>.*"
 
   # iterate all lines coming back from the Maven release history
   for line in $(curl -s https://maven.apache.org/docs/history.html); do
